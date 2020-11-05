@@ -6,6 +6,7 @@ countGames = 0
 games = []
 game = []
 pgn = ""
+flag = False
 
 countLineInGame = 0
 event = []
@@ -16,12 +17,22 @@ def main():
         file = sys.argv[1]
  
     with open(file,"r") as dataFile:
-        readMetaData(dataFile)
-        # one empyt line
-        dataFile.readline()
-        #then read the game pgn
-        readGamePGN(dataFile)
-        print(game)
+        global flag
+        global game
+        global countGames
+        while(not flag):
+            readMetaData(dataFile)
+            # one empyt line
+            dataFile.readline()
+            #then read the game pgn
+            readGamePGN(dataFile)
+            # append the game to games array
+            games.append(game)
+            game = []
+        # show all the games
+        for i in range (len(games)):
+            print(games[i])
+            print("=======================")
 
 
 def readMetaData(dataFile):
@@ -37,13 +48,15 @@ def readMetaData(dataFile):
 def readGamePGN(dataFile):
     for line in dataFile:
         global pgn
+        global flag
         pgn = pgn + line.strip()
         endOfGame = re.search('(1-0|1/2-1/2|0-1)$', line) # TODO change it to just one option, it is on metadata
         if endOfGame:
             game.append(pgn)
             pgn = ''
             # read the empty line before going to next game
-            dataFile.readline()
+            if(not dataFile.readline()):
+                flag = True
             break
 
 main()
