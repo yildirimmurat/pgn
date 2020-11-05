@@ -2,42 +2,48 @@
 import sys
 import re
 
-# Reads the first argument if it exists 
-if (sys.argv.__len__()>1):
-	file = sys.argv[1]
-
 countGames = 0
 games = []
 game = []
+pgn = ""
 
 countLineInGame = 0
 event = []
 
-# Reads a file and prints all the lines 
-with open(file,"r") as dataFile:
-    for line in dataFile:
-        lineToBeRead = line
-        print("lineToBeRead: ", lineToBeRead, end='')
-        if(lineToBeRead == ''):
-            print("all empty line go continue")
-            continue
-        print("countInGame+"+  str(countLineInGame))
-        if (countLineInGame == 1):
-            eventToBeAppended = re.search('Event \"(.*)\"', lineToBeRead)
-            if(eventToBeAppended):
-                game.append(eventToBeAppended.group(1))
-            else:
-                print("Event name cant be read in game")
-        game.append(line.strip())
-        endOfGame = re.search('(1-0|1/2-1/2|0-1)$', line)
-        countLineInGame += 1
-        if(endOfGame):
-            print("end of game")
-            print()
-            countGames+=1
-            games.append(game)
-            game = []
-            countLineInGame = 0
-            continue
+def main():
+    # Reads the first argument if it exists 
+    if (sys.argv.__len__()>1):
+        file = sys.argv[1]
+ 
+    with open(file,"r") as dataFile:
+        readMetaData(dataFile)
+        # one empyt line
+        dataFile.readline()
+        #then read the game pgn
+        readGamePGN(dataFile)
+        print(game)
 
-print(games[1][1])
+
+def readMetaData(dataFile):
+    dataArr = ['Event', 'Site', 'Date', 'Round', 'White', 'Black', 'Result', 'WhiteElo', 'BlackElo', 'ECO']
+    for i in range(10):
+        lineToBeRead = dataFile.readline()
+        dataToBeAppended = re.search(dataArr[i]+" \"(.*)\"", lineToBeRead)
+        if dataToBeAppended:
+            game.append(dataToBeAppended.group(1))
+        else:
+            game.append('')
+
+def readGamePGN(dataFile):
+    for line in dataFile:
+        global pgn
+        pgn = pgn + line.strip()
+        endOfGame = re.search('(1-0|1/2-1/2|0-1)$', line) # TODO change it to just one option, it is on metadata
+        if endOfGame:
+            game.append(pgn)
+            pgn = ''
+            # read the empty line before going to next game
+            dataFile.readline()
+            break
+
+main()
