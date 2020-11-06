@@ -3,6 +3,8 @@ import sys
 import re
 import cs50
 
+directory = "players/"
+files = []
 
 game = []
 pgn = ""
@@ -15,37 +17,47 @@ def main():
 
     open(f"pgn-database.db", "w").close()
     db = cs50.SQL("sqlite:///pgn-database.db")
-    db.execute("CREATE TABLE games (Event TEXT, Site TEXT, Date TEXT, Round TEXT, White TEXT, Black TEXT, Result TEXT, WhiteElo INT, BlackElo INT , ECO TEXT, PGN TEXT)")
- 
-    with open(file,"r") as dataFile:
+    db.execute("CREATE TABLE games (GameID INTEGER PRIMARY KEY AUTOINCREMENT, Event TEXT, Site TEXT, Date TEXT, Round TEXT, White TEXT, Black TEXT, Result TEXT, WhiteElo INT, BlackElo INT , ECO TEXT, PGN TEXT)")
+
+    with open(file, "r") as source:
+        for line in source:
+            files.append(line.strip())
+    
+    print("files: ", files)
+
+    for i in range(len(files)):
         global flag
-        global game
-        while(not flag):
-            readMetaData(dataFile)
-            # one empyt line
-            dataFile.readline()
-            #then read the game pgn
-            readGamePGN(dataFile)
-
-            # clear data first
+        flag = False
+        with open(directory+files[i]+".pgn","r") as dataFile:
+            print(directory+files[i]+".pgn")
             
-            if(game[7]):
-                game[7] = int(game[7])
-            else: 
-                game[7] = 0
-            if(game[8]):
-                game[8] = int(game[8])
-            else: 
-                game[8] = 0
-            # insert datas to db
-            db.execute("INSERT INTO games (Event, Site, Date, Round, White, Black, Result, WhiteElo, BlackElo , ECO, PGN) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", game[0], game[1], game[2], game[3], game[4], game[5], game[6], game[7], game[8], game[9], game[10])
+            global game
+            while(not flag):
+                readMetaData(dataFile)
+                # one empyt line
+                dataFile.readline()
+                #then read the game pgn
+                readGamePGN(dataFile)
 
-            
-            # append the game to games array
-            # games.append(game)
-            game = []
-        # show all the games
-        #print(db.execute("SELECT * FROM games"))
+                # clear data first
+                
+                if(game[7]):
+                    game[7] = int(game[7])
+                else: 
+                    game[7] = 0
+                if(game[8]):
+                    game[8] = int(game[8])
+                else: 
+                    game[8] = 0
+                # insert datas to db
+                db.execute("INSERT INTO games (Event, Site, Date, Round, White, Black, Result, WhiteElo, BlackElo , ECO, PGN) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", game[0], game[1], game[2], game[3], game[4], game[5], game[6], game[7], game[8], game[9], game[10])
+
+                game = []
+            # show all the games
+            #print(db.execute("SELECT * FROM games"))
+
+
+
 
 
 
