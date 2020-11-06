@@ -6,6 +6,7 @@ import cs50
 mainDatabase="pgn-database.db"
 tableName="games"
 columnName="PGN"
+# TODO parametric
 selectedRow=4
 
 games={}
