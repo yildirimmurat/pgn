@@ -7,7 +7,7 @@ mainDatabase="pgn-database.db"
 tableName="games"
 columnName="PGN"
 # TODO parametric
-selectedRow=4
+selectedRow=3221
 
 games={}
 moves={}
@@ -20,7 +20,9 @@ moveNumber = 1
 
 def main():
     getGamesFromDatabase()
-    insertMovesFromGame(selectedRow)
+    for i in range(selectedRow):
+        print("reading ", i+323)
+        insertMovesFromGame(i+1)
 
 
 def getGamesFromDatabase():
