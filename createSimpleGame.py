@@ -2,7 +2,8 @@
 import sys
 import re
 import cs50
-from analyseSingleMove import makeMove
+from helpers import *
+from analyseSingleMove import makeMove, findCellByRowLocation, findCellByColLocation
 import numpy as np
 
 # put all pieces into default positions
@@ -28,25 +29,6 @@ board = [['--' for i in range(rows)] for j in range(cols)]
 
 savedLocations = {}
 
-map={
-    'a': 0,
-    'b': 1,
-    'c': 2,
-    'd': 3,
-    'e': 4,
-    'f': 5,
-    'g': 6,
-    'h': 7
-}
-
-pieces={
-    'K': "King",
-    'Q': "Queen",
-    'R': "Rook",
-    'N': "Knight",
-    'B': "Bishop",
-    'p': "Pawn"
-}
 
 def main():
     printBoard()
@@ -61,24 +43,23 @@ def main():
     #readMovesFromGame()
 
     color="B"
-    moveList=['e4', 'e5', 'O-O', 'O-O-O', 'axb3', 'Qxe4', 'Bxe5', 'Bxe4', 'Rxa7', 'c5', 'Rxb7']
+    # moveList=['e4', 'e5', 'O-O', 'O-O-O', 'axb3', 'Qxe4', 'Bxe5', 'Bxe4', 'Rxa7', 'c5', 'Rxa7']
+    moveList=['e4', 'e5', 'Nxf3', 'Nxc6', 'd4', 'd5', 'Nbd2', 'Nge7', 'a8=Q', 'b1=N', 'Rb1', 'Bd7', 'Qxd8+']
     for i in range(len(moveList)):
         color=switchColor(color)
         print('color is: ', color)
         print('move is: ', moveList[i])
         move=moveList[i]
-        output=makeMove(move, color)
-        print('output:')
-        print(output)
+        output=makeMove(board, move, color)
 
         l=len(output['piece'])
         if l > 1:
+            # Castling
             for i in range(l):
                 piece=color+output['piece'][i]
                 previousCell=output['previousCell'][i]
                 nextCell=output['nextCell'][i]
-                emptyCell(previousCell)
-                fillCell(nextCell, piece)
+                captureCell(piece, previousCell, nextCell)
 
         elif (isinstance(output['previousCell'], list)):
             # e.g for e4 move previous cell could be both e5 or e6
@@ -91,155 +72,157 @@ def main():
                     previousCell = cell
                     break
             nextCell=output['nextCell']
-            emptyCell(previousCell)
-            fillCell(nextCell, piece)
+            captureCell(piece, previousCell, nextCell)
             
         elif(output['previousCell'] == 'previousCell'):
             piece=color+output['piece']
             nextCell=output['nextCell']
 
-
-            print('do the work')
             previousCell=findSavedCellLocation(piece, nextCell)
             if (len(previousCell) == 1):
                 previousCell = previousCell[0]
-            elif (piece[1]=='B'):
-                nextColor = getCellColor(nextCell)
-                if (nextColor == getCellColor(previousCell[0])):
-                    previousCell = previousCell[0]
-                else:
-                    previousCell = previousCell[1]
-            elif (piece[1]=='R'):
+
+            elif piece[1]=='B':
+                # there are at most two bishops in this case [0] or [1] should be in same color ???? maybe both ar in same in late game..
+                numOfBishops = len(previousCell)
+                # flagSameColorBishop = False
+                for i in [numOfBishops]:
+                    capture = canCapture(piece[1], previousCell[0], nextCell)
+                    if capture:
+                        previousCell = previousCell[0]
+                        # flagSameColorBishop = True
+                        break # what if we do not find any same color bishop ?? use flag maybe...
+                # if not flagSameColorBishop:
+                #     print('same color bishop cannot be find... color: ', getCellColor(nextCell))
+            
+            elif piece[1]=='R':
                 # should check if they can capture the piece
                 # there can be also more than two rooks on board
-                for i in range(len(previousCell)):
-                    print('i', i)
-                    capture=canCapture(piece[1], previousCell[i], nextCell)
-                    
-                    print('in capture', capture)
-                    if capture:
-                        previousCell = previousCell[i]
-                        break
-            elif (piece[1]=='Q'):
-                for i in range(len(previousCell)):
+                numOfRooks = len(previousCell)
+                for i in range(numOfRooks):
+                    print('FOR --- previousCell:', previousCell[i])
                     capture=canCapture(piece[1], previousCell[i], nextCell)
                     if capture:
                         previousCell = previousCell[i]
                         break
-                
-
             
+            elif piece[1]=='Q':
+                numOfQueens = len(previousCell)
+                for i in range(numOfQueens):
+                    capture=canCapture(piece[1], previousCell[i], nextCell)
+                    if capture:
+                        previousCell = previousCell[i]
+                        break
+            elif piece[1] == 'N':
+                numOfKnights = len(previousCell)
+                for i in range(numOfKnights):
+                    capture=canCapture(piece[1], previousCell[i], nextCell)
+                    if capture:
+                        previousCell = previousCell[i]
+                        break
+            else:
+                print('', end="")
 
-            print('previousCell')
-            print(previousCell)
-
-
-            emptyCell(previousCell)
-            fillCell(nextCell, piece)
+                
+            captureCell(piece, previousCell, nextCell)
 
         else:
             piece=color+output['piece']
             previousCell=output['previousCell']
             nextCell=output['nextCell']
-            emptyCell(previousCell)
-            fillCell(nextCell, piece)
+            captureCell(piece, previousCell, nextCell)
 
-
+        if output['promotion'] != '':
+            promote(nextCell, color, output['promotion'])
 
         printBoard()
 
-    printBoard()
-    print(checkPieceInDiagonal('h2', 'b8'))
+
+    # print(canCapture('N', 'e4', 'g3'))
+    # print(findCellByRowLocation(board, 'N', '1'))
+    # print(findCellByColLocation(board, 'N', 'c'))
+
+
+# promote a cell by given type
+def promote(cell, color, promotionType):
+    index = mapCellToIndex(cell)
+    piece = color+promotionType
+    fillCell(cell, piece)
+
+    return
+
+# capture a cell by piece
+def captureCell(piece, previousCell, nextCell):
+    print('previousCell:', previousCell)
+    print('nextCell: ', nextCell)
+    emptyCell(previousCell)
+    fillCell(nextCell, piece)
+
+    return
 
 # return true if type of a piece can capture the cell from a prev. cell
 def canCapture(piece, previousCell, nextCell):
-    if (piece == 'R'):
-        if (previousCell[0] == nextCell[0]):
-            # same col
-            # check if any piece in between
-            prevRow = int(previousCell[1])
-            nextRow = int(nextCell[1])
+    if piece == 'R':
 
-            if (abs(nextRow-prevRow) == 1):
-                # adjacent cells
+        sameRow = checkOnSameRow(previousCell, nextCell)
+        sameCol = checkOnSameCol(previousCell, nextCell)
+
+
+        if sameRow:
+            print('same Row for ', previousCell, nextCell)
+            if not checkPieceInRow(previousCell, nextCell):
                 return True
-            else: 
-                for i in range(prevRow, nextRow-1):
-                    col = map[previousCell[0]]
-                    if (board[i][col] != '--'):
-                        return False
+            return False
+        elif sameCol:
+            print('same col for ', previousCell, nextCell)
+            if not checkPieceInCol(previousCell, nextCell):
                 return True
-
-        elif (previousCell[1] == nextCell[1]):
-            # same row
-            # check if any piece in between
-            prevCol = previousCell[0]
-            nextCol = nextCell[0]
-
-            if (abs(map[nextCol]-map[prevCol]) == 1):
-                # adjacent cells
-                return True
-            else:
-                for i in range(prevCol, nextCol-1):
-                    row = previousCell[1]
-                    # print('board[row][:',i,']:', board[row][i])
-                    if (board[i][col] != '--'):
-                        return False
-                return True
-
-
             return False
         else:
+            print('not in same row or cell', previousCell, nextCell)
             return False
 
-    elif (piece=='Q'):
+    elif piece=='Q':
         # if has on same diagonal or same row or same col
         sameDiagonal = checkOnSameDiagonal(previousCell, nextCell)
         sameRow = checkOnSameRow(previousCell, nextCell)
         sameCol = checkOnSameCol(previousCell, nextCell)
 
         if sameRow:
-            if checkPieceInRow(previousCell, nextCell):
+            if not checkPieceInRow(previousCell, nextCell):
                 return True
             return False
         elif sameCol:
-            if checkPieceInCol(previousCell, nextCell):
+            if not checkPieceInCol(previousCell, nextCell):
                 return True
             return False
         elif sameDiagonal:
-            if checkPieceInDiagonal(previousCell, nextCell):
+            if not checkPieceInDiagonal(previousCell, nextCell):
                 return True
             return False
         else:
             return False
-        
 
-# returns True if two given cells are on same diagonal
-def checkSameDiagonal(previousCell, nextCell):
+    elif piece == 'N':
+        prevCellCol = map[previousCell[0]]
+        prevCellRow = int(previousCell[1])
 
-    prevCellCol = map[previousCell[0]]
-    prevCellRow = int(previousCell[1])
-    prevCellDiff = prevCellCol - prevCellRow
+        nextCellCol = map[nextCell[0]]
+        nextCellRow = int(nextCell[1])
 
-    nextCellCol = map[nextCell[0]]
-    nextCellRow = int(nextCell[1])
-    nextCellDiff = nextCellCol - nextCellRow
+        colDiff = abs(prevCellCol - nextCellCol)
+        rowDiff = abs(prevCellRow - nextCellRow)
 
-    if (prevCellDiff == nextCellDiff):
-        return True
-    return False
+        if (colDiff == 1 and rowDiff == 2) or (colDiff == 2 and rowDiff == 1):
+            return True
+        return False
 
-# returns True if two given cells are on same row
-def checkOnSameRow(previousCell, nextCell):
-    if(previousCell[1] == nextCell[1]):
-        return True
-    return False
-
-# returns True if two given cells are on same column
-def checkOnSameCol(previousCell, nextCell):
-    if (previousCell[0] == nextCell[0]):
-        return True
-    return False
+    elif piece == 'B':
+        prevColor = getCellColor(previousCell)
+        nextColor = getCellColor(nextCell)
+        if prevColor == nextColor:
+            return True
+        return False
 
 # returns False if there is no piece between cells which are on same row
 def checkPieceInRow(previousCell, nextCell):
@@ -272,6 +255,7 @@ def checkPieceInCol(previousCell, nextCell):
     prevRow = int(previousCell[1]) - 1
     nextRow = int(nextCell[1]) - 1
 
+    print('in checkPieceInCol')
     if (prevRow > nextRow):
         prevRow, nextRow = nextRow, prevRow
 
@@ -281,8 +265,11 @@ def checkPieceInCol(previousCell, nextCell):
     else:
         for i in range(prevRow + 1, nextRow):
             searchIndex = [i, col]
+            print('searchIndex', searchIndex)
             cell = mapIndexToCell(searchIndex)
+            print('cell', cell)
             val = getCellValue(cell)
+            print('val', val)
             if (val != '--'):
                 return True
         return False           
@@ -329,16 +316,8 @@ def getCellColor(cell):
     else:
         return 'dark'
 
-
 def findSavedCellLocation(piece, nextCell):
     return savedLocations[piece]
-
-
-def switchColor(color):
-    if color=='W':
-        return 'B'
-    else:
-        return 'W'
 
 def emptyCell(previousCell):
     previousIndex = mapCellToIndex(previousCell)
@@ -373,25 +352,6 @@ def fillCell(nextCell, piece):
 
     return
 
-   
-def mapCellToIndex(location):
-    global board
-    global map
-    desiredCol = location[:1]
-    desiredRow = location[1:]
-
-    indexRow = int(desiredRow) - 1
-    indexCol = map[desiredCol]
-
-    return [indexRow, indexCol]
-
-def mapIndexToCell(index):
-    map=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-    row=index[0]+1
-    col=map[index[1]]
-
-    return col+str(row)
-
 # puts a piece into a desired location on the board
 def putPieceIntoBoard(piece, location):
     global board
@@ -401,9 +361,7 @@ def putPieceIntoBoard(piece, location):
     col=index[1]
     board[row][col] = piece
 
-
-    return
-    
+    return  
 
 def putPieceIntoBoardByArray(arr):
     for i in range(len(arr)):
@@ -412,7 +370,6 @@ def putPieceIntoBoardByArray(arr):
         putPieceIntoBoard(piece, location)
     
     return
-
 
 def putPiecesIntoDefaultPosition():
     # default position
@@ -439,13 +396,11 @@ def putPiecesIntoDefaultPosition():
 
     return
 
-
 def printBoard():
     print("=================================")
     for i in range(8):
         print(board[8-i-1])
     print("=================================")
-
 
 def showLocation(piece):#todo searchIn -- whole board or just white-black squares, how many piece there are currently
     locationArr=[]
