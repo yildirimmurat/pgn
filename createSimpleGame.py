@@ -8,8 +8,6 @@ import numpy as np
 
 
 # TODO --> en passant for pawns
-# TODO --> for Ne2, Bxe2 emptyCell didnt work
-# TODO --> for Nf6, other knight disappears
 
 
 
@@ -87,7 +85,7 @@ def getPreviousCellByPieceMove(piece, previousCell, nextCell):
     for i in range(numOfPieces):
         capture = canCapture(piece[1], previousCell[i], nextCell)
         if capture:
-            previousCell = previousCell[0]
+            previousCell = previousCell[i]
             break
     return previousCell
 
@@ -352,10 +350,10 @@ def readSingleGameGromDB():
 def readMovesFromGame(gameId):
     print("reading moves from game")
     # moveList=['e4', 'e5', 'Nf3', 'Nc6', 'd4', 'd5', 'Nxe5', 'Nxd4', 'a8=Q', 'b1=N', 'Rb1', 'Bd7', 'Qxd8+', 'b6', 'Ngxf3', 'gxh1=R']
-    moveList = ['e4', 'c6', 'd4', 'd5', 'exd5', 'cxd5', 'Bd3', 'Nf6', 'c3', 'Bg4', 'Qb3', 'Qc7', 'Ne2', 'Bxe2', 'Bxe2', 'Nc6']
-# 9.O-O e6 10.Be3 Bd6 11.f4 O-O 12.Qd1 Qb6 13.b4 Ne4 14.Bd3 f5 15.Rf3 a5 16.b5 Ne7
-# 17.c4 dxc4 18.Bxc4 Rf6 19.Qb3 a4 20.Bxe6+ Kh8 21.Qc4 Bxf4 22.Bxf4 Rxe6 23.Na3 Rc8
-# 24.Qxa4 Nc3 25.Qb4 Ned5 26.Rxc3 Nxc3 27.Kh1 Nd5 28.Qd6
+    moveList = ['e4', 'c6', 'd4', 'd5', 'exd5', 'cxd5', 'Bd3', 'Nf6', 'c3', 'Bg4', 'Qb3', 'Qc7', 'Ne2', 'Bxe2', 'Bxe2', 'Nc6', 'O-O', 
+                'e6', 'Be3', 'Bd6', 'f4', 'O-O', 'Qd1', 'Qb6', 'b4', 'Ne4', 'Bd3', 'f5', 'Rf3', 'a5', 'b5', 'Ne7', 'c4', 'dxc4', 'Bxc4',
+                'Rf6', 'Qb3', 'a4', 'Bxe6+', 'Kh8', 'Qc4', 'Bxf4', 'Bxf4', 'Rxe6', 'Na3', 'Rc8', 'Qxa4', 'Nc3', 'Qb4', 'Ned5', 'Rxc3',
+                'Nxc3', 'Kh1', 'Nd5', 'Qd6']
     return moveList
 
 
