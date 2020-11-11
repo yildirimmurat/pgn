@@ -1,4 +1,14 @@
 # helper functions
+import numpy as np
+
+
+# 2D board array
+# https://www.geeksforgeeks.org/python-using-2d-arrays-lists-the-right-way/
+rows, cols = (8, 8) 
+board = [['--' for i in range(rows)] for j in range(cols)]
+
+savedLocations = {}
+
 
 map={
     'a': 0,
@@ -13,13 +23,19 @@ map={
 
 # TODO
 # use like pieces.KING
-pieces={
-    'K': "King",
-    'Q': "Queen",
-    'R': "Rook",
-    'N': "Knight",
-    'B': "Bishop",
-    'p': "Pawn"
+pieces = {
+    'KING': 'K',
+    'QUEEN': 'Q',
+    'ROOK': 'R',
+    'KNIGHT': 'N',
+    'BISHOP': 'B',
+    'PAWN': 'p'
+}
+
+# can be used several times
+colors = {
+    'WHITE' : 'W',
+    'BLACK': 'B'
 }
 
 # returns True if two given cells are on same diagonal
@@ -50,10 +66,10 @@ def checkOnSameCol(previousCell, nextCell):
     return False
 
 def switchColor(color):
-    if color=='W':
-        return 'B'
+    if color == colors['WHITE']:
+        return colors['BLACK']
     else:
-        return 'W'
+        return colors['WHITE']
 
 def mapCellToIndex(location):
     desiredCol = location[:1]
@@ -94,3 +110,48 @@ def findCellByColLocation(board, piece, locationHint):
         if(board[row][col] == piece):
             return cell
     return False
+
+# return the piece that is on the cell
+def getCellValue(board, cell):
+    index = mapCellToIndex(cell)
+    return board[index[0]][index[1]]
+
+# return the color of cell
+def getCellColor(cell):
+    index=mapCellToIndex(cell)
+    if (index[0]+index[1]) % 2 == 0:
+        return colors['WHITE']
+    else:
+        return colors['BLACK']
+
+# return saved locations of the given piece
+def findSavedCellLocation(piece):
+    return savedLocations[piece]
+
+# make cell empty
+def emptyCell(previousCell):
+    previousIndex = mapCellToIndex(previousCell)
+    piece=board[previousIndex[0]][previousIndex[1]]
+
+    # https://stackoverflow.com/questions/10996140/how-to-remove-specific-elements-in-a-numpy-array
+    a = np.array(savedLocations[piece])
+    b = np.array([previousCell])
+    savedLocations[piece] = np.setdiff1d(a, b)
+    board[previousIndex[0]][previousIndex[1]] = '--'
+
+    return
+
+# fill cell with a given piece
+def fillCell(nextCell, piece):
+    nextIndex = mapCellToIndex(nextCell)
+    board[nextIndex[0]][nextIndex[1]] = piece
+
+    # https://stackoverflow.com/questions/9775297/concatenate-a-numpy-array-to-another-numpy-array
+    a = np.array([nextCell])
+    b = savedLocations[piece]
+    savedLocations[piece]=np.concatenate((a, b))
+
+    # print(savedLocations)
+
+    return
+

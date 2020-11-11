@@ -35,7 +35,7 @@ def main():
 
 
         board = {}#TODO
-        output = makeMove(board, move)
+        output = analyseMove(board, move)
 
         # print output
         print("promotion: ", output['promotion'])
@@ -50,7 +50,7 @@ def main():
         
 
 
-def makeMove(board, move, color='W', isCheck=False, takes=False, promotion=''):
+def analyseMove(board, move, color=colors['WHITE'], isCheck=False, takes=False, promotion=''):
     # TODO
     # bxc1=Q. dxc8=N+
     # check if-else logic
@@ -67,43 +67,51 @@ def makeMove(board, move, color='W', isCheck=False, takes=False, promotion=''):
         output['isCheck']=True
 
     if move == "O-O":
-        output=castleShort(output, color)
+        output=analyseCastleShort(output, color)
 
     elif move == "O-O-O":
-        output=castleLong(output, color)
+        output=analyseCastleLong(output, color)
 
-    elif len(move)==2:
+    elif len(move) == 2:
         # e.g e4
         output=pawnForward(output, move, color)
 
-    else:
-        # e.g Qxb5
-        if(len(move) == 4 and move[1] == "x"):
-            output=pieceTakes(output, move, color)
-        else:
-            if(len(move) == 4):
-                if move[2] == '=':
-                    # e.g a8=Q
-                    output = pawnPromote(board, move, color)
-                else:
-                    # e.g Nbd3
-                    output = moveByLocationHint(output, board, move, color)
+    elif len(move) == 3:
+        # a piece move to a empty cell, e.g Rb1, Bd7
+        output = normalPieceMove(output, move)
 
-            elif(len(move)==3):
-                # a piece move to a empty cell, e.g Rb1, Bd7
-                output = normalPieceMove(output, move)
-            else:
-                # TODO
-                print("????!!!??")
-                print('MOVE: ', move)
-                print("!!!!!????!!!")
-                try:
-                    output['piece']=move[0]
-                except:
-                    output['piece']="exception piece"
-                output['previousCell']="saved location of row or col:"+move[1]
-                output['nextCell']=move[3:]
-                output['takes']=True
+    elif len(move) == 4:
+        # e.g Qxb5
+        if move[1] == 'x':
+            output=pieceTakes(output, move, color)
+        elif move[2] == '=':
+            # e.g a8=Q
+            output = pawnPromote(board, move, color)
+        else:
+            # e.g Nbd3
+            output = moveByLocationHint(output, board, move, color)
+    elif len(move) == 5:
+        # e.g Nbxd4
+        if move[2] != 'x':
+            print("????!!!??")
+            print('MOVE: ', move)
+            print("!!!!!????!!!")
+        else:
+            move = move.replace('x', '')
+            print('move: ', move)
+            output = analyseMove(board, move, color=color)
+            output['takes'] = True
+    else:
+        # e.g bxc1=Q
+        if move[-2] != '=':
+            print("????!!!??")
+            print('MOVE: ', move)
+            print("!!!!!????!!!")
+        else:
+            promoteTo = move[-1]
+            move = move[:-2]
+            output = analyseMove(board, move, color = color)
+            output['promotion'] = promoteTo
 
     return output
 
@@ -133,16 +141,16 @@ def moveByLocationHint(output, board, move, color):
 def pawnPromote(board, move, color):
     promoteTo = move[3]
     move = move[:2]
-    output = makeMove(board, move, color=color)
+    output = analyseMove(board, move, color=color)
     output['promotion'] = promoteTo
 
     return output
 
 # get outputs of short castling, O-O
-def castleShort(output, color):
-    output['piece']=['K', 'R']
+def analyseCastleShort(output, color):
+    output['piece'] = ['K', 'R']
 
-    if color=="W":
+    if color == colors['WHITE']:
         # white castle short
         output['previousCell']=['e1', 'h1']
         output['nextCell']=['g1', 'f1']
@@ -154,10 +162,10 @@ def castleShort(output, color):
     return output
 
 # get outputs of long castling, O-O-O
-def castleLong(output, color):
+def analyseCastleLong(output, color):
     output['piece']=['K', 'R']
 
-    if color=="W":
+    if color== colors['WHITE']:
         # white castle long
         output['previousCell']=['e1', 'a1']
         output['nextCell']=['c1', 'd1']
@@ -174,7 +182,7 @@ def pawnForward(output, move, color):
     output['piece']='p'
     print('move:', move)
     print('color:', color)
-    if (move[1] == "4" and color == 'W'):
+    if (move[1] == "4" and color == colors['WHITE']):
         output['previousCell']=[move[0]+"3", move [0]+"2"]
     elif (move[1] == "5" and color == 'B'):
         output['previousCell']=[move[0]+"6", move [0]+"7"]
@@ -199,7 +207,7 @@ def pieceTakes(output, move, color):
     else:
         # e.g axb8
         output['piece']='p'
-        if color == 'W':
+        if color == colors['WHITE']:
             output['previousCell']=move[0]+str((int(move[3])-1))
         else:
             output['previousCell']=move[0]+str((int(move[3])+1))
