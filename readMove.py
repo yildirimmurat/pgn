@@ -7,7 +7,7 @@ mainDatabase="pgn-database.db"
 tableName="games"
 columnName="PGN"
 # TODO parametric
-selectedRow=3221
+selectedRow=50000
 
 games={}
 moves={}
@@ -19,10 +19,10 @@ moveNumber = 1
 
 
 def main():
-    getGamesFromDatabase()
+    games = getGamesFromDatabase()
     for i in range(selectedRow):
-        print("reading ", i+323)
-        insertMovesFromGame(i+1)
+        print("reading game ", i+1)
+        insertMovesFromGame(i+1, games)
 
 
 def getGamesFromDatabase():
@@ -31,15 +31,17 @@ def getGamesFromDatabase():
     with open(f''+mainDatabase, "r"):
         db = cs50.SQL("sqlite:///"+mainDatabase)
         games = db.execute("SELECT "+columnName+" FROM "+tableName)
+    
+    return games
 
-def insertMovesFromGame(selectedRow):
+def insertMovesFromGame(selectedRow, games):
     global moveNumber
-    game=games[selectedRow][columnName]
+    game=games[selectedRow - 1][columnName]
     gameMoves=game.split(" ")
     
     # create moves table
-    with open(f"pgn-database.db", "a"):
-        moveDB = cs50.SQL("sqlite:///pgn-database.db")
+    #with open(f"pgn-database.db", "a"):
+    moveDB = cs50.SQL("sqlite:///pgn-database.db")
         #moveDB.execute("CREATE TABLE moves (game_id, moveID INTEGER PRIMARY KEY AUTOINCREMENT, moveNumber INT, color TEXT, move TEXT, FOREIGN KEY(game_id) REFERENCES games(GameID))")
     
     for i in range(len(gameMoves)):
