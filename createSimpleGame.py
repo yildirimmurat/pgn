@@ -3,27 +3,31 @@ import sys
 import re
 import cs50
 from helpers import *
-from analyseSingleMove import analyseMove, findCellByRowLocation, findCellByColLocation
-import numpy as np
-
+from analyseSingleMove import *
 
 # TODO --> en passant for pawns
 
 
-
-
-def main():
-    printBoard()
-    putPiecesIntoDefaultPosition()
-    printBoard()
+# def main():
+    # printBoard()
+    # putPiecesIntoDefaultPosition()
+    # printBoard()
 
     #readSingleGameFromDB()
-    gameId = readSingleGameGromDB()
+    # id = input("Enter gameId: ")
+    # id = 4
 
-    #readMovesFromGame()
-    moveList = readMovesFromGame(gameId)
+    # for i in range(9709):
+    #     print('............................')
+    #     gameId = readSingleGameGromDB(i+1)
 
-    playGame(board, moveList)
+    #     #readMovesFromGame()
+    #     print('for gameId:', gameId)
+    #     moveList = readMovesFromGame(gameId)
+
+    #     playGame(board, moveList)
+    #     print('............................')
+    #     putPiecesIntoDefaultPosition()
 
 # play a simple game by given move list
 def playGame(board, moveList):
@@ -343,13 +347,43 @@ def showLocation(piece):#todo searchIn -- whole board or just white-black square
     return locationArr
 
 # returns gameId of a game on games table
-def readSingleGameGromDB():
-    print("reading single game from database")
-    return int('4')
+def readSingleGameGromDB(gameId):
+    # TODO read single game info and output the basic information to the user
+    # print("reading single game from database with id: ", gameId)
+
+    # read games table
+    # output players with colors and the result
+    # or output an object which contains all of that
+
+
+    return int(gameId)
 
 def readMovesFromGame(gameId):
-    print("reading moves from game")
-    # moveList=['e4', 'e5', 'Nf3', 'Nc6', 'd4', 'd5', 'Nxe5', 'Nxd4', 'a8=Q', 'b1=N', 'Rb1', 'Bd7', 'Qxd8+', 'b6', 'Ngxf3', 'gxh1=R']
+    # print("reading moves from game with id:", gameId)
+    # read moves table
+    # select all the moves with gameId = gameId
+    # get moves one by one with color W and color B
+
+    # definitions
+    # mainDatabase="pgn-database.db"
+    # tableName="moves"
+    # columnName="move"
+    # idColumn="game_id"
+    # # TODO parametric
+    # selectedRow = gameId
+
+    # moves = getMovesFromDatabase(mainDatabase = mainDatabase, tableName = tableName, columnName = columnName, idColumn = idColumn, selectedRow = gameId)
+    # l = len(moves)
+    # for i in range(l):
+    #     print('move #', i, moves[i][columnName])
+
+
+
+
+
+
+
+
     moveList = ['e4', 'c6', 'd4', 'd5', 'exd5', 'cxd5', 'Bd3', 'Nf6', 'c3', 'Bg4', 'Qb3', 'Qc7', 'Ne2', 'Bxe2', 'Bxe2', 'Nc6', 'O-O', 
                 'e6', 'Be3', 'Bd6', 'f4', 'O-O', 'Qd1', 'Qb6', 'b4', 'Ne4', 'Bd3', 'f5', 'Rf3', 'a5', 'b5', 'Ne7', 'c4', 'dxc4', 'Bxc4',
                 'Rf6', 'Qb3', 'a4', 'Bxe6+', 'Kh8', 'Qc4', 'Bxf4', 'Bxf4', 'Rxe6', 'Na3', 'Rc8', 'Qxa4', 'Nc3', 'Qb4', 'Ned5', 'Rxc3',
@@ -359,4 +393,4 @@ def readMovesFromGame(gameId):
 
 
 
-main()
+# main()

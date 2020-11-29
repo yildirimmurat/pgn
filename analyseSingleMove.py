@@ -4,51 +4,57 @@ import re
 import cs50
 from helpers import *
 
-# definitions
-mainDatabase="pgn-database.db"
-tableName="moves"
-columnName="move"
-idColumn="moveID"
-# TODO parametric
-selectedRow=52
 
 
 
 
 
 
-def main():
+# def main():
 
+#     # definitions
+#     mainDatabase="pgn-database.db"
+#     tableName="moves"
+#     columnName="move"
+#     idColumn="game_id"
+#     # TODO parametric
+#     selectedRow = 4
+
+#     move = getMovesFromDatabase(mainDatabase, tableName, columnName, idColumn, selectedRow)
+
+#     print('...move...', move)
+
+    # for i in range(2):# TODO not hardcoded here
+    #     print("analysing move",i+1)
+    #     move = db.execute("SELECT "+columnName+" FROM "+tableName+" WHERE "+idColumn+"="+str(i+1))[0]['move']
+
+    #     # print input
+    #     print("==========")
+    #     print("move: "+move)
+    #     print("...........")
+
+
+    #     board = {}#TODO
+    #     output = analyseMove(board, move)
+
+    #     # print output
+    #     print("promotion: ", output['promotion'])
+    #     print("isCheck: ", output['isCheck'])
+    #     print("takes: ", output['takes'])
+    #     print("previousCell: ", output['previousCell'])
+    #     print("nextCell: ", output['nextCell'])
+    #     print("piece:", output['piece'])
+    #     print("============")
+
+
+# return array of move objects with coloumnName = 'move' in default
+def getMovesFromDatabase(mainDatabase, tableName, columnName, idColumn, selectedRow):
     # read a single move from database
     with open(f''+mainDatabase, "r"):
         db = cs50.SQL("sqlite:///"+mainDatabase)
-        # move = db.execute("SELECT "+columnName+" FROM "+tableName+" WHERE "+idColumn+"="+str(selectedRow))[0]['move']
+        move = db.execute("SELECT "+columnName+" FROM "+tableName+" WHERE "+idColumn+"="+str(selectedRow))
 
-    for i in range(2):# TODO not hardcoded here
-        print("analysing move",i+1)
-        move = db.execute("SELECT "+columnName+" FROM "+tableName+" WHERE "+idColumn+"="+str(i+1))[0]['move']
-
-        # print input
-        print("==========")
-        print("move: "+move)
-        print("...........")
-
-
-        board = {}#TODO
-        output = analyseMove(board, move)
-
-        # print output
-        print("promotion: ", output['promotion'])
-        print("isCheck: ", output['isCheck'])
-        print("takes: ", output['takes'])
-        print("previousCell: ", output['previousCell'])
-        print("nextCell: ", output['nextCell'])
-        print("piece:", output['piece'])
-        print("============")
-
-
-        
-
+    return move
 
 def analyseMove(board, move, color=colors['WHITE'], isCheck=False, takes=False, promotion=''):
     # TODO
@@ -224,4 +230,4 @@ def pieceTakes(output, move, color):
 
 
 
-main()
+# main()
