@@ -25,6 +25,22 @@
     cursor: pointer;
 }
 
+.pgn span.active {
+    /* background-color: #aaa; */
+}
+
+.board div.from {
+    background-color: #F6F668;
+}
+
+.board div.to {
+    background-color:  #BBCA2B;
+}
+
+.pgn span.played {
+    background-color: #BBCA2B;
+}
+
 p{
     text-align: center;
 }

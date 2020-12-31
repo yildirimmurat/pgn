@@ -359,22 +359,24 @@ def readSingleGameGromDB(gameId):
     return int(gameId)
 
 def readMovesFromGame(gameId):
-    # print("reading moves from game with id:", gameId)
+    print("reading moves from game with id:", gameId)
     # read moves table
     # select all the moves with gameId = gameId
     # get moves one by one with color W and color B
 
     # definitions
-    # mainDatabase="pgn-database.db"
-    # tableName="moves"
-    # columnName="move"
-    # idColumn="game_id"
+    mainDatabase="pgn-database.db"
+    tableName="moves"
+    columnName="move"
+    idColumn="game_id"
     # # TODO parametric
-    # selectedRow = gameId
+    selectedRow = gameId
 
-    # moves = getMovesFromDatabase(mainDatabase = mainDatabase, tableName = tableName, columnName = columnName, idColumn = idColumn, selectedRow = gameId)
-    # l = len(moves)
-    # for i in range(l):
+    moves = getMovesFromDatabase(mainDatabase = mainDatabase, tableName = tableName, columnName = columnName, idColumn = idColumn, selectedRow = gameId)
+    l = len(moves)
+    moveList = []
+    for i in range(l):
+        moveList.append(moves[i][columnName])
     #     print('move #', i, moves[i][columnName])
 
 
@@ -384,10 +386,10 @@ def readMovesFromGame(gameId):
 
 
 
-    moveList = ['e4', 'c6', 'd4', 'd5', 'exd5', 'cxd5', 'Bd3', 'Nf6', 'c3', 'Bg4', 'Qb3', 'Qc7', 'Ne2', 'Bxe2', 'Bxe2', 'Nc6', 'O-O', 
-                'e6', 'Be3', 'Bd6', 'f4', 'O-O', 'Qd1', 'Qb6', 'b4', 'Ne4', 'Bd3', 'f5', 'Rf3', 'a5', 'b5', 'Ne7', 'c4', 'dxc4', 'Bxc4',
-                'Rf6', 'Qb3', 'a4', 'Bxe6+', 'Kh8', 'Qc4', 'Bxf4', 'Bxf4', 'Rxe6', 'Na3', 'Rc8', 'Qxa4', 'Nc3', 'Qb4', 'Ned5', 'Rxc3',
-                'Nxc3', 'Kh1', 'Nd5', 'Qd6']
+    # moveList = ['e4', 'c6', 'd4', 'd5', 'exd5', 'cxd5', 'Bd3', 'Nf6', 'c3', 'Bg4', 'Qb3', 'Qc7', 'Ne2', 'Bxe2', 'Bxe2', 'Nc6', 'O-O', 
+    #             'e6', 'Be3', 'Bd6', 'f4', 'O-O', 'Qd1', 'Qb6', 'b4', 'Ne4', 'Bd3', 'f5', 'Rf3', 'a5', 'b5', 'Ne7', 'c4', 'dxc4', 'Bxc4',
+    #             'Rf6', 'Qb3', 'a4', 'Bxe6+', 'Kh8', 'Qc4', 'Bxf4', 'Bxf4', 'Rxe6', 'Na3', 'Rc8', 'Qxa4', 'Nc3', 'Qb4', 'Ned5', 'Rxc3',
+    #             'Nxc3', 'Kh1', 'Nd5', 'Qd6']
     return moveList
 
 

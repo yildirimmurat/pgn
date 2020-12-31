@@ -128,22 +128,23 @@ $(function() {
     // putPiece(kingw, '11');
     putPieces(startingPositionArray);
 
-    $('.cell').on('click', function() {
-        //define its starting position
-        //when clicked in another square
-            //detach the figure from old place
-            //and put in the new place
-        let cellId1 = $(this).attr('id');
-        while(true) {
-            $('.cell').on('click', function() {
-                let cellId2 = $(this).attr('id');
-                if(cellId1 !== cellId2) {
-                    let fig = $('this').find('img').detach();
+    
+    // $('.cell').on('click', function() {
+    //     //define its starting position
+    //     //when clicked in another square
+    //         //detach the figure from old place
+    //         //and put in the new place
+    //     let cellId1 = $(this).attr('id');
+    //     while(true) {
+    //         $('.cell').on('click', function() {
+    //             let cellId2 = $(this).attr('id');
+    //             if(cellId1 !== cellId2) {
+    //                 let fig = $('this').find('img').detach();
                     
-                }
-            })
-        }
+    //             }
+    //         })
+    //     }
 
-        return false;
-    });
+    //     return false;
+    // });
 })
