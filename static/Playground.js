@@ -1,5 +1,5 @@
 import Figure from './Figure.js';
-class Playground {
+export default class Playground {
 
 	
 	
@@ -59,6 +59,26 @@ class Playground {
 		let figureToMove = $board.find('.cell-' + cell1).find('img').detach();
 		let $cellToMove = $board.find('.cell-' + cell2);
 		$cellToMove.append(figureToMove);
+	}
+
+	static removeFigure(cell) {
+		let $board = $('.board');
+		$board.find('.cell-' + cell).find('img').remove();
+	}
+	
+	static highlightMove(prev, next) {
+		let board = $('.board');
+		let fromCell = $(board).find('.from')
+		let toCell = $(board).find('.to')
+		$(fromCell).removeClass('from')
+		$(toCell).removeClass('to')
+
+		let prevCell = $(board).find('.cell-' + prev)
+		let nextCell = $(board).find('.cell-' + next)
+
+		$(prevCell).addClass('from')
+		$(nextCell).addClass('to')
+
 	}
 
 	static changeColLabel(flip, label) {
@@ -142,11 +162,7 @@ const queenb = new Figure('queen', 'black');
 const kingb = new Figure('king', 'black');
 const pawnb = new Figure('pawn', 'black');
 
-function sleep(ms) {
-	var start = new Date().getTime(), expire = start + ms;
-	while (new Date().getTime() < expire) { }
-	return;
-}
+
 
 
 Playground.startUpPieces(false);
@@ -161,3 +177,4 @@ Playground.startUpPieces(false);
 // Playground.moveFigure('d7', 'd5');
 // sleep(1000)
 // Playground.moveFigure('e4', 'd5');
+
