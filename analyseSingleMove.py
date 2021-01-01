@@ -56,6 +56,15 @@ def getMovesFromDatabase(mainDatabase, tableName, columnName, idColumn, selected
 
     return move
 
+def getSingleDataFromDatabase(mainDatabase, tableName, columnName, selectedRow):
+    # read a single move from database
+    with open(f''+mainDatabase, "r"):
+        db = cs50.SQL("sqlite:///"+mainDatabase)
+        move = db.execute("SELECT "+columnName+" FROM "+tableName+" WHERE GameID="+str(selectedRow))
+
+    return move
+
+
 def analyseMove(board, move, color=colors['WHITE'], isCheck=False, takes=False, promotion=''):
     # TODO
     # bxc1=Q. dxc8=N+

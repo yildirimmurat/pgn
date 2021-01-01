@@ -22,14 +22,12 @@ def main():
     with open(file, "r") as source:
         for line in source:
             files.append(line.strip())
-    
-    print("files: ", files)
 
     for i in range(len(files)):
         global flag
         flag = False
+        # print('reading ' + files[i])
         with open(directory+files[i]+".pgn","r") as dataFile:
-            print(directory+files[i]+".pgn")
             
             global game
             while(not flag):
@@ -61,6 +59,7 @@ def main():
 
 
 
+
 def readMetaData(dataFile):
     dataArr = ['Event', 'Site', 'Date', 'Round', 'White', 'Black', 'Result', 'WhiteElo', 'BlackElo', 'ECO']
     for i in range(10):
@@ -75,9 +74,10 @@ def readGamePGN(dataFile):
     for line in dataFile:
         global pgn
         global flag
-        pgn = pgn + line.strip()
+        pgn = pgn + line.strip() + ' '
         endOfGame = re.search('(1-0|1/2-1/2|0-1)$', line) # TODO change it to just one option, it is on metadata
         if endOfGame:
+            pgn=pgn.strip()
             game.append(pgn)
             pgn = ''
             # read the empty line before going to next game

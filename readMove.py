@@ -7,7 +7,7 @@ mainDatabase="pgn-database.db"
 tableName="games"
 columnName="PGN"
 # TODO parametric
-selectedRow=50000
+selectedRow=100
 
 games={}
 moves={}
@@ -42,7 +42,9 @@ def insertMovesFromGame(selectedRow, games):
     # create moves table
     #with open(f"pgn-database.db", "a"):
     moveDB = cs50.SQL("sqlite:///pgn-database.db")
-        #moveDB.execute("CREATE TABLE moves (game_id, moveID INTEGER PRIMARY KEY AUTOINCREMENT, moveNumber INT, color TEXT, move TEXT, FOREIGN KEY(game_id) REFERENCES games(GameID))")
+
+    # only if there is no moves table
+    # moveDB.execute("CREATE TABLE moves (game_id, moveID INTEGER PRIMARY KEY AUTOINCREMENT, moveNumber INT, color TEXT, move TEXT, FOREIGN KEY(game_id) REFERENCES games(GameID))")
     
     for i in range(len(gameMoves)):
         regex="\d{1,}\.(.*)"

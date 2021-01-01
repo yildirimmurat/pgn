@@ -379,19 +379,19 @@ def readMovesFromGame(gameId):
         moveList.append(moves[i][columnName])
     #     print('move #', i, moves[i][columnName])
 
-
-
-
-
-
-
-
-    # moveList = ['e4', 'c6', 'd4', 'd5', 'exd5', 'cxd5', 'Bd3', 'Nf6', 'c3', 'Bg4', 'Qb3', 'Qc7', 'Ne2', 'Bxe2', 'Bxe2', 'Nc6', 'O-O', 
-    #             'e6', 'Be3', 'Bd6', 'f4', 'O-O', 'Qd1', 'Qb6', 'b4', 'Ne4', 'Bd3', 'f5', 'Rf3', 'a5', 'b5', 'Ne7', 'c4', 'dxc4', 'Bxc4',
-    #             'Rf6', 'Qb3', 'a4', 'Bxe6+', 'Kh8', 'Qc4', 'Bxf4', 'Bxf4', 'Rxe6', 'Na3', 'Rc8', 'Qxa4', 'Nc3', 'Qb4', 'Ned5', 'Rxc3',
-    #             'Nxc3', 'Kh1', 'Nd5', 'Qd6']
     return moveList
 
+def readMetaDataFromGame(gameId, columnName):
+    print('reading metadata from game with id: '+str(gameId))
+    # definitions
+    mainDatabase="pgn-database.db"
+    tableName="games"
+    # idColumn="game_id"
+    # # TODO parametric
+    selectedRow = gameId
+    data = getSingleDataFromDatabase(mainDatabase = mainDatabase, tableName=tableName, columnName = columnName, selectedRow = gameId)
+    
+    return data
 
 
 
